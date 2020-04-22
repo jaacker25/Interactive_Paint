@@ -3,6 +3,7 @@
 //Abril del 2020
 
 import processing.video.*;
+import processing.sound.*;
 
 Capture cam;
 int i;
@@ -25,6 +26,7 @@ float timeCapturePrev;
 float timeDraw;
 float timeDrawPrev;
 
+SoundFile audioSample;
 
 void setup() {
   size(1360, 768);
@@ -38,6 +40,10 @@ void setup() {
   String[] cameras = Capture.list();
   cam = new Capture(this, 1600,896, cameras[0],30);
   cam.start();      
+
+  //Proceso para reproducir el archivo de audio
+  audioSample = new SoundFile(this, "sample.mp3");
+  audioSample.loop();
 
    //estos valores nos ayudan a generar el patron de puntos con los que vamos a pintar la imagen  
    pos1.x=random(width);
@@ -74,7 +80,7 @@ void draw() {
     float h = hue(pg.pixels[i]);
     float s = saturation(pg.pixels[i]);
     float b = brightness(pg.pixels[i]);
-    pg.pixels[i] = color(h,s+15,b+15); 
+    pg.pixels[i] = color(h,s+15+random(100),b+15); 
     } 
   pg.updatePixels();
   
@@ -93,6 +99,7 @@ void draw() {
   clearBack=false;
   }
     //proceso que genera el dibujo
+    for(int count=0;count<10;count++){
     t=random(1);
     x = lerp(pos1.x,pos2.x,t);
     y = lerp(pos1.y,pos2.y,t);
@@ -107,15 +114,20 @@ void draw() {
     pos2.y=pos1.y;
     j=0;
     }
+    }
+    
   
-  //cada 7.5 seg se genera una burbuja aleatoria para darle un toque imperfecto al dibujo
+  
+  
+  
+  //cada 5 seg se genera una burbuja aleatoria para darle un toque imperfecto al dibujo
   timeRandomBubble=millis();
-  if(timeRandomBubble-timeRandomBubblePrev>7500){
+  if(timeRandomBubble-timeRandomBubblePrev>5000){
   giveRandomBubble();
   }
- //El proceso de dibujo toma 1min despues de esto se genera una nueva captura   
+ //El proceso de dibujo toma 30 segundos despues de esto se genera una nueva captura   
   timeDraw=millis();
-  if(timeDraw-timeDrawPrev>60000){
+  if(timeDraw-timeDrawPrev>30000){
    changeState();
    }
   }
@@ -125,7 +137,7 @@ void draw() {
 void giveRandomBubble(){
   strokeWeight(random(150));
   point(random(width),random(height));
-  strokeWeight(random(35));
+  strokeWeight(random(50));
   timeRandomBubblePrev=timeRandomBubble;
 }
 
@@ -137,7 +149,7 @@ if(startDraw){
 cam.stop();
 timeDrawPrev=millis();
 }else{
-saveFrame("palm_test1_####.png");
+//saveFrame("palm_test1_####.png");
 cam.start();
 timeCapturePrev=millis();
 }
